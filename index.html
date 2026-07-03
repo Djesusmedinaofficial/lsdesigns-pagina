@@ -259,6 +259,32 @@
                 letter-spacing: 2px;
             }
         }
+        /* LIGHTBOX / MODAL PARA IMÁGENES */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 240ms ease;
+        }
+        .lightbox-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .lightbox-image {
+            max-width: 92%;
+            max-height: 92%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border-radius: 6px;
+            cursor: zoom-out;
+            transform: translateY(0);
+            transition: transform 240ms ease;
+        }
     </style>
 </head>
 <body>
@@ -334,6 +360,11 @@
         © LS DESIGNS // INTERFAZ DIGITAL 2026
     </footer>
 
+    <!-- LIGHTBOX OVERLAY PARA AMPLIAR IMÁGENES -->
+    <div id="lightbox-overlay" class="lightbox-overlay" aria-hidden="true">
+        <img id="lightbox-img" class="lightbox-image" src="" alt="">
+    </div>
+
     <!-- LOGICA INTERACTIVA Y PARTÍCULAS -->
     <script>
         // Función para abrir y cerrar el portafolio
@@ -403,6 +434,40 @@
 
         init();
         animate();
+
+        // Lightbox: abrir imagen al hacer clic
+        function openLightbox(src, alt) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            img.alt = alt || '';
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            overlay.classList.remove('show');
+            img.src = '';
+            document.body.style.overflow = '';
+        }
+
+        // Delegación de clics para todas las imágenes de diseño
+        document.addEventListener('click', function(e) {
+            const targetImg = e.target.closest('.design-card img');
+            if (targetImg) {
+                openLightbox(targetImg.src, targetImg.alt);
+            }
+        });
+
+        // Cerrar al clicar sobre el overlay o presionar Escape
+        document.getElementById('lightbox-overlay').addEventListener('click', function(e) {
+            closeLightbox();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
     </script>
 </body>
 </html>
